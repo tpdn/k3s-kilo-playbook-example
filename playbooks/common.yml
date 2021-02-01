@@ -1,0 +1,41 @@
+---
+- hosts: all
+  become: True
+  tasks:
+  - name: Run apt update, if it doesnt exist /var/lib/apt/lists/lock
+    command: apt update
+    args:
+      creates: /var/lib/apt/lists/lock
+
+  - name: Install wireguard
+    apt:
+      name: wireguard
+      update_cache: yes
+
+  - name: Allow wireguard
+    ufw:
+      rule: allow
+      port: '51820'
+      proto: udp
+      src: '{{ item }}'
+    with_items:
+      - "{{ groups['all'] }}"
+
+  - name: Set ssh rate limit
+    ufw:
+      rule: limit
+      port: ssh
+      proto: tcp
+  
+  - name: Allow from Cluster
+    ufw:
+      rule: allow
+      interface: kube-bridge
+      src: '10.42.0.0/16'
+      direction: in
+
+  - name: Enable ufw and set default deny
+    ufw:
+      state: enabled
+      policy: deny
+

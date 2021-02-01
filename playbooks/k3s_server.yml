@@ -1,0 +1,20 @@
+---
+- hosts: k3s_servers
+  become: True
+  tasks:
+  - name: Install K3S server, if it doesnt exist k3s
+    shell: |
+      curl -sfL https://get.k3s.io | sh -
+    args:
+      creates: /usr/local/bin/k3s
+      warn: False
+    environment:
+      K3S_TOKEN: "{{ k3s_cluster_secret }}"
+      INSTALL_K3S_EXEC: "server --flannel-backend=none --disable=traefik --disable=metrics-server"
+
+  - name: Allow K3S server api
+    ufw:
+      rule: allow
+      port: '6443'
+      proto: tcp
+

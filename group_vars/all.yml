@@ -1,0 +1,5 @@
+---
+ansible_ssh_user: root
+ansible_ssh_common_args: -o StrictHostKeyChecking=no -i id_rsa
+k3s_cluster_secret: Replace it !!!
+

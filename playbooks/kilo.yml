@@ -1,0 +1,12 @@
+---
+- hosts: k3s_servers
+  become: True
+  tasks:
+  - name: Copy manifest to k3s_server
+    copy:
+      src: "{{ playbook_dir }}/../files/kilo-k3s.yaml"
+      dest: /tmp/kilo-k3s.yaml
+  
+  - name: Deploy Kilo
+    shell: |
+      kubectl apply -f /tmp/kilo-k3s.yaml
